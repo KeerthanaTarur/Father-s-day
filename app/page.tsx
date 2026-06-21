@@ -83,6 +83,16 @@ export default function FathersDayPage() {
   const [chatInput, setChatInput] = useState("");
   const chatLogsRef = useRef<HTMLDivElement>(null);
 
+  // Audio Reference for Elevator Background Music
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Initialize the audio instance on mount safely client-side
+  useEffect(() => {
+    audioRef.current = new Audio("/elevator-music.mp3");
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.4; // Soft background levels
+  }, []);
+
   // Auto scroll chat box
   useEffect(() => {
     if (chatLogsRef.current) {
@@ -94,10 +104,17 @@ export default function FathersDayPage() {
     if (captchaChecked) return;
     setCaptchaChecked(true);
     setVerifying(true);
-    setVerifiedText("⏳ we won't take your words for it");
+    setVerifiedText("we won't take your word for it");
+
+    // Play the background elevator music immediately following user interaction
+    if (audioRef.current) {
+      audioRef.current.play().catch((err) => {
+        console.log("Audio autoplay prevented or failed:", err);
+      });
+    }
     
     setTimeout(() => {
-      setVerifiedText("✅ let's put that to the test");
+      setVerifiedText("let's put that to the test");
       setTimeout(() => setScreen("jokes"), 1000);
     }, 1500);
   };
@@ -156,7 +173,11 @@ export default function FathersDayPage() {
               <div className="text-xs opacity-40 font-bold uppercase tracking-wider">or</div>
               <button 
                 className="w-full bg-transparent text-[#2B2B3D] font-bold text-sm py-2 px-4 rounded-full border-2 border-dashed border-[#2B2B3D]"
-                onClick={() => setScreen("dadChat")}
+                onClick={() => {
+                  // Play music if clicking alternate branch too
+                  if (audioRef.current) audioRef.current.play().catch(() => {});
+                  setScreen("dadChat");
+                }}
               >
                 Or talk to dad
               </button>
