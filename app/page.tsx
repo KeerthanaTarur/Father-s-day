@@ -8,42 +8,42 @@ const dadTypes = [
     id: "space",
     type: "Space Dad",
     image: "/space-dad.jpg",
-    description: "Looks at the stars, quotes cosmos facts, thinks daylight savings is a cosmic anomaly.",
+    description: "Looks at the stars, quotes cosmos facts, thinks daylight savings is a cosmic anomaly, and we love you for it.",
     color: "#D0E1FD"
   },
   {
     id: "tech",
     type: "Tech Dad",
     image: "/tech-dad.jpg",
-    description: "Holds the phone 2 feet from his face with maximum brightness. Peers over reading glasses.",
+    description: "Holds the phone 2 feet from his face with maximum brightness. Peers over reading glasses, and we love you for it.",
     color: "#FFD9CE"
   },
   {
     id: "fishing",
     type: "Fishing Dad",
     image: "/fishing-dad.jpg",
-    description: "Has 47 photos of the exact same fish. Wakes up at 4:00 AM on weekends 'for the peace'.",
+    description: "Has 47 photos of the exact same fish. Wakes up at 4:00 AM on weekends 'for the peace', and we love you for it.",
     color: "#AFC49C"
   },
   {
     id: "super",
     type: "Super Dad",
     image: "/super-dad.jpg",
-    description: "Wears the absolute wildest gear, tells everyone he's still got it, ultimate family legend.",
+    description: "Wears the absolute wildest gear, tells everyone he's still got it, ultimate family legend, and we love you for it.",
     color: "#FCE19C"
   },
   {
     id: "sports",
     type: "Sports Dad",
     image: "/sports-dad.png",
-    description: "Sweats more than the players. Backseat coaches from the sidelines with maximum volume.",
+    description: "Sweats more than the players. Backseat coaches from the sidelines with maximum volume, and we love you for it.",
     color: "#E5E1F4"
   },
   {
     id: "sea",
     type: "Sea Dad",
     image: "/sea-dad.jpg",
-    description: "Captain of the grill, master of the fake pipe, tells tall tales about the neighborhood pond.",
+    description: "Captain of the grill, master of the fake pipe, tells tall tales about the neighborhood pond, and we love you for it.",
     color: "#CBE8F7"
   }
 ];
@@ -68,6 +68,17 @@ const dadReplies = [
   "Are you tracking mud into my clean kitchen?",
 ];
 
+interface ConfettiPiece {
+  id: number;
+  x: number;
+  y: number;
+  size: number;
+  color: string;
+  delay: number;
+  duration: number;
+  angle: number;
+}
+
 export default function FathersDayPage() {
   const [screen, setScreen] = useState<"captcha" | "jokes" | "chuckleNo" | "chuckleYes" | "dadType" | "result" | "dadChat" | "favoriteChild">("captcha");
   const [verifying, setVerifying] = useState(false);
@@ -75,6 +86,10 @@ export default function FathersDayPage() {
   const [captchaChecked, setCaptchaChecked] = useState(false);
   const [flippedJokes, setFlippedJokes] = useState<Record<number, boolean>>({});
   const [selectedIndex, setSelectedIndex] = useState(1);
+  
+  // Custom states for the interactive celebration
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
   
   // Chat States
   const [messages, setMessages] = useState<{ sender: "dad" | "user"; text: string }[]>([
@@ -90,7 +105,7 @@ export default function FathersDayPage() {
   useEffect(() => {
     audioRef.current = new Audio("/elevator-music.mp3");
     audioRef.current.loop = true;
-    audioRef.current.volume = 0.4; // Soft background levels
+    audioRef.current.volume = 0.4;
   }, []);
 
   // Auto scroll chat box
@@ -104,9 +119,8 @@ export default function FathersDayPage() {
     if (captchaChecked) return;
     setCaptchaChecked(true);
     setVerifying(true);
-    setVerifiedText("we won't take your word for it");
+    setVerifiedText("⏳ we won't take your words for it");
 
-    // Play the background elevator music immediately following user interaction
     if (audioRef.current) {
       audioRef.current.play().catch((err) => {
         console.log("Audio autoplay prevented or failed:", err);
@@ -114,7 +128,7 @@ export default function FathersDayPage() {
     }
     
     setTimeout(() => {
-      setVerifiedText("let's put that to the test");
+      setVerifiedText("✅ let's put that to the test");
       setTimeout(() => setScreen("jokes"), 1000);
     }, 1500);
   };
@@ -135,9 +149,70 @@ export default function FathersDayPage() {
     }, 800);
   };
 
+  // Triggers custom confetti animation explosions across the viewport
+  const triggerConfettiCelebration = () => {
+    setShowCelebration(true);
+    const colors = ["#E8836B", "#AFC49C", "#FCE19C", "#D0E1FD", "#FFD9CE", "#E5E1F4"];
+    const pieces: ConfettiPiece[] = Array.from({ length: 80 }).map((_, i) => ({
+      id: i,
+      x: Math.random() * 100, // horizontal spread %
+      y: Math.random() * -20 - 10, // initial explosion height above screen
+      size: Math.random() * 12 + 6,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      delay: Math.random() * 0.5,
+      duration: Math.random() * 2 + 2.5,
+      angle: Math.random() * 360
+    }));
+    setConfetti(pieces);
+  };
+
+  // Reset helper when choosing another dad type
+  const handleNavigateToSelection = () => {
+    setShowCelebration(false);
+    setConfetti([]);
+    setScreen("dadType");
+  };
+
   return (
-    <main className="min-h-screen w-full flex items-center justify-center font-quicksand text-[#2B2B3D] select-none bg-[#FAF6F0]">
+    <main className="min-h-screen w-full flex items-center justify-center font-quicksand text-[#2B2B3D] select-none bg-[#FAF6F0] overflow-hidden relative">
       
+      {/* Dynamic Confetti Stream Elements */}
+      {confetti.map((piece) => (
+        <span
+          key={piece.id}
+          className="absolute z-50 rounded-sm pointer-events-none animate-fall"
+          style={{
+            left: `${piece.x}%`,
+            top: `${piece.y}%`,
+            width: `${piece.size}px`,
+            height: `${piece.size}px`,
+            backgroundColor: piece.color,
+            animationDelay: `${piece.delay}s`,
+            animationDuration: `${piece.duration}s`,
+            transform: `rotate(${piece.angle}deg)`
+          }}
+        />
+      ))}
+
+      {/* Inject custom Tailwind keyframes natively inside the document */}
+      <style jsx global>{`
+        @keyframes fall {
+          0% {
+            transform: translateY(0vh) rotate(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(115vh) rotate(720deg);
+            opacity: 0.3;
+          }
+        }
+        .animate-fall {
+          animation-name: fall;
+          animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          animation-iteration-count: infinite;
+        }
+      `}</style>
+
       {/* SCREEN 1: CAPTCHA */}
       {screen === "captcha" && (
         <div className="flex flex-col items-center gap-6 text-center max-w-[560px] p-4">
@@ -174,7 +249,6 @@ export default function FathersDayPage() {
               <button 
                 className="w-full bg-transparent text-[#2B2B3D] font-bold text-sm py-2 px-4 rounded-full border-2 border-dashed border-[#2B2B3D]"
                 onClick={() => {
-                  // Play music if clicking alternate branch too
                   if (audioRef.current) audioRef.current.play().catch(() => {});
                   setScreen("dadChat");
                 }}
@@ -273,7 +347,7 @@ export default function FathersDayPage() {
           </span>
           
           <div className="flex flex-col items-center justify-center py-6 w-full">
-            <div className="font-caveat font-bold text-6xl text-[#E8836B] border-[5px] border-[#E8836B] rounded-xl px-8 py-3 rotate-[-4deg] inline-block tracking-wide bg-white/40 shadow-sm">
+            <div className="font-caveat font-bold text-6xl text-[#E8836B] border-[5px] border-[#E8836B] rounded-xl px-8 py-3 rotate-[ -4deg] inline-block tracking-wide bg-white/40 shadow-sm">
               CONFIRMED DAD
             </div>
           </div>
@@ -321,7 +395,7 @@ export default function FathersDayPage() {
         </div>
       )}
 
-      {/* SCREEN 5: RESULTS SCREEN */}
+      {/* SCREEN 5: RESULTS SCREEN WITH CONDITIONAL CELEBRATION DISPATCH */}
       {screen === "result" && (
         <div 
           className="w-full min-h-screen flex flex-col items-center justify-center p-8 transition-colors duration-500"
@@ -334,23 +408,40 @@ export default function FathersDayPage() {
             <div className="w-[180px] h-[180px] bg-white rounded-full border-3 border-[#2B2B3D] overflow-hidden shadow-md">
               <img src={dadTypes[selectedIndex].image} alt="Dad type profile" className="w-full h-full object-cover"/>
             </div>
+            
             <p className="font-caveat font-bold text-3xl leading-tight mt-2 px-4">
               &ldquo;{dadTypes[selectedIndex].description}&rdquo;
             </p>
             
-            <div className="flex flex-col gap-3 w-full max-w-[300px] mt-4">
-              <button 
-                className="bg-[#E8836B] text-white font-bold py-3 px-6 rounded-full border-2 border-[#2B2B3D] shadow-[4px_4px_0_#2B2B3D]"
-                onClick={() => setScreen("favoriteChild")}
-              >
-                Start beef at home
-              </button>
-              <button 
-                className="bg-white text-[#2B2B3D] font-bold py-2 px-4 rounded-full border-2 border-dashed border-[#2B2B3D]"
-                onClick={() => setScreen("dadType")}
-              >
-                &leftturn; pick a different type
-              </button>
+            <div className="flex flex-col gap-4 w-full max-w-[320px] mt-4">
+              {/* Core Celebration Trigger Button */}
+              {!showCelebration ? (
+                <button 
+                  className="bg-[#2B2B3D] text-white font-bold py-3.5 px-6 rounded-full border-2 border-[#2B2B3D] shadow-[4px_4px_0_#E8836B] hover:translate-y-[-2px] active:translate-y-[1px] transition-transform text-sm tracking-wide"
+                  onClick={triggerConfettiCelebration}
+                >
+                  thank you kid you&apos;re simply the best
+                </button>
+              ) : (
+                /* Celebration Complete: Submenu reveals itself directly following the click interaction */
+                <div className="flex flex-col gap-3 w-full animate-fade-in">
+                  <div className="bg-white border-2 border-[#2B2B3D] rounded-full py-2 px-4 text-xs font-black uppercase text-[#D66A50] tracking-widest shadow-[3px_3px_0_#2B2B3D] mb-2">
+                    ❤️ Best Dad Ever!
+                  </div>
+                  <button 
+                    className="bg-[#E8836B] text-white font-bold py-3 px-6 rounded-full border-2 border-[#2B2B3D] shadow-[4px_4px_0_#2B2B3D]"
+                    onClick={() => setScreen("favoriteChild")}
+                  >
+                    Start beef at home
+                  </button>
+                  <button 
+                    className="bg-white text-[#2B2B3D] font-bold py-2 px-4 rounded-full border-2 border-dashed border-[#2B2B3D]"
+                    onClick={handleNavigateToSelection}
+                  >
+                    &leftturn; pick a different type
+                  </button>
+                </div>
+              )}
             </div>
             <p className="text-xs font-bold opacity-50 mt-4">📲 screenshot this and send it straight to dad</p>
           </div>
@@ -425,7 +516,7 @@ export default function FathersDayPage() {
           
           <button 
             className="mt-4 bg-transparent text-[#2B2B3D] font-bold text-xs py-2 px-4 rounded-full border-2 border-dashed border-[#2B2B3D]"
-            onClick={() => setScreen("dadType")}
+            onClick={handleNavigateToSelection}
           >
             &leftturn; Back to Dad Quiz
           </button>
