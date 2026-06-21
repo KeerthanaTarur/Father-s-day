@@ -119,7 +119,7 @@ export default function FathersDayPage() {
     if (captchaChecked) return;
     setCaptchaChecked(true);
     setVerifying(true);
-    setVerifiedText("⏳ we won't take your words for it");
+    setVerifiedText("we won't take your words for it");
 
     if (audioRef.current) {
       audioRef.current.play().catch((err) => {
@@ -128,7 +128,7 @@ export default function FathersDayPage() {
     }
     
     setTimeout(() => {
-      setVerifiedText("✅ let's put that to the test");
+      setVerifiedText("let's put that to the test");
       setTimeout(() => setScreen("jokes"), 1000);
     }, 1500);
   };
@@ -149,14 +149,13 @@ export default function FathersDayPage() {
     }, 800);
   };
 
-  // Triggers custom confetti animation explosions across the viewport
   const triggerConfettiCelebration = () => {
     setShowCelebration(true);
     const colors = ["#E8836B", "#AFC49C", "#FCE19C", "#D0E1FD", "#FFD9CE", "#E5E1F4"];
     const pieces: ConfettiPiece[] = Array.from({ length: 80 }).map((_, i) => ({
       id: i,
-      x: Math.random() * 100, // horizontal spread %
-      y: Math.random() * -20 - 10, // initial explosion height above screen
+      x: Math.random() * 100,
+      y: Math.random() * -20 - 10,
       size: Math.random() * 12 + 6,
       color: colors[Math.floor(Math.random() * colors.length)],
       delay: Math.random() * 0.5,
@@ -166,7 +165,6 @@ export default function FathersDayPage() {
     setConfetti(pieces);
   };
 
-  // Reset helper when choosing another dad type
   const handleNavigateToSelection = () => {
     setShowCelebration(false);
     setConfetti([]);
@@ -194,7 +192,6 @@ export default function FathersDayPage() {
         />
       ))}
 
-      {/* Inject custom Tailwind keyframes natively inside the document */}
       <style jsx global>{`
         @keyframes fall {
           0% {
@@ -282,14 +279,12 @@ export default function FathersDayPage() {
                     transformStyle: "preserve-3d"
                   }}
                 >
-                  {/* Front: Question */}
                   <div 
                     className="absolute inset-0 rounded-full border-3 border-[#2B2B3D] bg-[#FCE19C] flex items-center justify-center p-6 text-center font-bold text-sm shadow-[4px_4px_0_rgba(43,43,61,0.1)]"
                     style={{ backfaceVisibility: "hidden" }}
                   >
                     {joke.q}
                   </div>
-                  {/* Back: Answer */}
                   <div 
                     className="absolute inset-0 rounded-full border-3 border-[#2B2B3D] bg-[#AFC49C] flex items-center justify-center p-6 text-center font-bold text-sm shadow-[4px_4px_0_rgba(43,43,61,0.1)]"
                     style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
@@ -301,7 +296,6 @@ export default function FathersDayPage() {
               </div>
             ))}
 
-            {/* End Card of Slider */}
             <div className="flex-shrink-0 snap-center bg-white border-[2.5px] border-[#2B2B3D] rounded-2xl shadow-[5px_5px_0_rgba(43,43,61,0.12)] p-8 w-[280px]">
               <h2 className="font-caveat font-bold text-3xl mb-4">did that make you chuckle?</h2>
               <div className="flex flex-col gap-3">
@@ -347,7 +341,7 @@ export default function FathersDayPage() {
           </span>
           
           <div className="flex flex-col items-center justify-center py-6 w-full">
-            <div className="font-caveat font-bold text-6xl text-[#E8836B] border-[5px] border-[#E8836B] rounded-xl px-8 py-3 rotate-[ -4deg] inline-block tracking-wide bg-white/40 shadow-sm">
+            <div className="font-caveat font-bold text-6xl text-[#E8836B] border-[5px] border-[#E8836B] rounded-xl px-8 py-3 rotate-[-4deg] inline-block tracking-wide bg-white/40 shadow-sm">
               CONFIRMED DAD
             </div>
           </div>
@@ -395,7 +389,7 @@ export default function FathersDayPage() {
         </div>
       )}
 
-      {/* SCREEN 5: RESULTS SCREEN WITH CONDITIONAL CELEBRATION DISPATCH */}
+      {/* SCREEN 5: RESULTS SCREEN */}
       {screen === "result" && (
         <div 
           className="w-full min-h-screen flex flex-col items-center justify-center p-8 transition-colors duration-500"
@@ -414,7 +408,6 @@ export default function FathersDayPage() {
             </p>
             
             <div className="flex flex-col gap-4 w-full max-w-[320px] mt-4">
-              {/* Core Celebration Trigger Button */}
               {!showCelebration ? (
                 <button 
                   className="bg-[#2B2B3D] text-white font-bold py-3.5 px-6 rounded-full border-2 border-[#2B2B3D] shadow-[4px_4px_0_#E8836B] hover:translate-y-[-2px] active:translate-y-[1px] transition-transform text-sm tracking-wide"
@@ -423,8 +416,7 @@ export default function FathersDayPage() {
                   thank you kid you&apos;re simply the best
                 </button>
               ) : (
-                /* Celebration Complete: Submenu reveals itself directly following the click interaction */
-                <div className="flex flex-col gap-3 w-full animate-fade-in">
+                <div className="flex flex-col gap-3 w-full">
                   <div className="bg-white border-2 border-[#2B2B3D] rounded-full py-2 px-4 text-xs font-black uppercase text-[#D66A50] tracking-widest shadow-[3px_3px_0_#2B2B3D] mb-2">
                     ❤️ Best Dad Ever!
                   </div>
@@ -438,12 +430,12 @@ export default function FathersDayPage() {
                     className="bg-white text-[#2B2B3D] font-bold py-2 px-4 rounded-full border-2 border-dashed border-[#2B2B3D]"
                     onClick={handleNavigateToSelection}
                   >
-                    &leftturn; pick a different type
+                    turn around and pick a different type
                   </button>
                 </div>
               )}
             </div>
-            <p className="text-xs font-bold opacity-50 mt-4">📲 screenshot this and send it straight to dad</p>
+            <p className="text-xs font-bold opacity-50 mt-4">Happy father's day old man!</p>
           </div>
         </div>
       )}
@@ -518,7 +510,7 @@ export default function FathersDayPage() {
             className="mt-4 bg-transparent text-[#2B2B3D] font-bold text-xs py-2 px-4 rounded-full border-2 border-dashed border-[#2B2B3D]"
             onClick={handleNavigateToSelection}
           >
-            &leftturn; Back to Dad Quiz
+            turn around and pick a different type
           </button>
         </div>
       )}
