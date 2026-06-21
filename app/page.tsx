@@ -91,12 +91,16 @@ export default function FathersDayPage() {
   const [showCelebration, setShowCelebration] = useState(false);
   const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
   
+  // State for the uploaded favorite child image preview string
+  const [favoriteChildImage, setFavoriteChildImage] = useState<string | null>(null);
+  
   // Chat States
   const [messages, setMessages] = useState<{ sender: "dad" | "user"; text: string }[]>([
     { sender: "dad", text: "Ask your mother, I'm fixing the lawnmower right now." },
   ]);
   const [chatInput, setChatInput] = useState("");
   const chatLogsRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Audio Reference for Elevator Background Music
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -119,7 +123,7 @@ export default function FathersDayPage() {
     if (captchaChecked) return;
     setCaptchaChecked(true);
     setVerifying(true);
-    setVerifiedText("we won't take your words for it");
+    setVerifiedText("we won't take your word for it");
 
     if (audioRef.current) {
       audioRef.current.play().catch((err) => {
@@ -171,9 +175,33 @@ export default function FathersDayPage() {
     setScreen("dadType");
   };
 
+  // Convert uploaded image to an actionable local blob URL string for display
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setFavoriteChildImage(imageUrl);
+    }
+  };
+
+  const triggerFileSelection = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
     <main className="min-h-screen w-full flex items-center justify-center font-quicksand text-[#2B2B3D] select-none bg-[#FAF6F0] overflow-hidden relative">
       
+      {/* Hidden file selector node */}
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        onChange={handleImageUpload} 
+        accept="image/*" 
+        className="hidden" 
+      />
+
       {/* Dynamic Confetti Stream Elements */}
       {confetti.map((piece) => (
         <span
@@ -497,9 +525,31 @@ export default function FathersDayPage() {
           <h1 className="font-caveat font-bold text-5xl leading-tight">Favorite Child<br/>Proclaimer</h1>
           <p className="text-sm font-semibold opacity-70">The mathematical verification profile has spoken.</p>
           
+          {/* Polaroid Frame Container */}
           <div className="bg-white border-[2.5px] border-[#2B2B3D] p-4 pb-10 shadow-[6px_6px_0_rgba(43,43,61,0.12)] rotate-[2deg] my-4 w-full">
-            <div className="w-full aspect-[4/3] bg-[#EEEADF] border-2 border-dashed border-[#2B2B3D] flex items-center justify-center font-bold text-md text-[#D66A50]">
-              <span>[ Insert Winner Photo Here ]</span>
+            <div 
+              onClick={triggerFileSelection}
+              className="w-full aspect-[4/3] bg-[#EEEADF] border-2 border-dashed border-[#2B2B3D] flex flex-col items-center justify-center font-bold text-xs text-[#D66A50] cursor-pointer hover:bg-[#E5E1D5] transition-colors overflow-hidden relative group"
+            >
+              {favoriteChildImage ? (
+                <>
+                  <img 
+                    src={favoriteChildImage} 
+                    alt="The Favorite Child" 
+                    className="w-full h-full object-cover" 
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity font-bold text-xs">
+                    Change Photo
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center gap-1 p-4">
+                  <svg className="w-6 h-6 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 002-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span>Click to upload winner photo</span>
+                </div>
+              )}
             </div>
             <h2 className="font-caveat font-bold text-4xl mt-4 text-[#2B2B3D]">The Favourite Child</h2>
           </div>
@@ -507,7 +557,7 @@ export default function FathersDayPage() {
           <p className="font-caveat font-bold text-2xl text-[#D66A50]">&ldquo;Don&apos;t tell your siblings, but it&apos;s true.&rdquo;</p>
           
           <button 
-            className="mt-4 bg-transparent text-[#2B2B3D] font-bold text-xs py-2 px-4 rounded-full border-2 border-dashed border-[#2B2B3D]"
+            className="mt-4 bg-white text-[#2B2B3D] font-bold py-2 px-4 rounded-full border-2 border-dashed border-[#2B2B3D] text-xs"
             onClick={handleNavigateToSelection}
           >
             turn around and pick a different type
