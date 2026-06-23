@@ -141,16 +141,33 @@ export default function FathersDayPage() {
     setFlippedJokes((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
-  const handleSendChat = () => {
+ const handleSendChat = async () => {
     if (!chatInput.trim()) return;
     const userText = chatInput;
     setMessages((prev) => [...prev, { sender: "user", text: userText }]);
     setChatInput("");
 
-    setTimeout(() => {
-      const randomReply = dadReplies[Math.floor(Math.random() * dadReplies.length)];
-      setMessages((prev) => [...prev, { sender: "dad", text: randomReply }]);
-    }, 800);
+    console.log(messages);
+
+
+    const req = { text: userText };
+    const updatedMessages = [...messages, { sender: "user", text: userText }];
+    console.log(req);
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messages: updatedMessages.map(m => ({
+          role: m.sender === "dad" ? "assistant" : "user",
+          content: m.text,
+        }))
+      }),
+    });
+    const data = await response.json();
+    setMessages((prev) => [...prev, { sender: "dad", text: data.reply }]);
+    console.log(data.reply);
   };
 
   const triggerConfettiCelebration = () => {
